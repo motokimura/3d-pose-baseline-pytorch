@@ -1,0 +1,11 @@
+# 3d_pose_estimation
+h5py
+numpy
+tqdm
+#torch
+#torchvision
+
+# misc
+flake8
+jupyterlab
+matplotlib==3.0.3
