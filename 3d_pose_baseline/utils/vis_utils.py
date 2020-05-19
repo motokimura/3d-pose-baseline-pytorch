@@ -17,12 +17,18 @@ def show_3d_pose(channels, ax, lcolor="#3498db", rcolor="#e74c3c", add_labels=Fa
         add_labels (bool, optional): Whether to add coordinate labels. Defaults to False.
     """
 
-    assert channels.size == len(H36M_NAMES) * 3, "channels should have 96 entries, it has {} instead.".format(channels.size)
+    assert (
+        channels.size == len(H36M_NAMES) * 3
+    ), "channels should have 96 entries, it has {} instead.".format(channels.size)
     vals = np.reshape(channels, (len(H36M_NAMES), -1))
 
     # XXX: Joint indices are hard coded.
-    I = np.array([0, 1, 2, 0, 6, 7, 0, 12, 13, 14, 13, 17, 18, 13, 25, 26])  # Start points.
-    J = np.array([1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27])  # End points.
+    I = np.array(
+        [0, 1, 2, 0, 6, 7, 0, 12, 13, 14, 13, 17, 18, 13, 25, 26]
+    )  # Start points.
+    J = np.array(
+        [1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27]
+    )  # End points.
     LR = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], dtype=bool)
 
     # Make connection array.
@@ -51,7 +57,7 @@ def show_3d_pose(channels, ax, lcolor="#3498db", rcolor="#e74c3c", add_labels=Fa
     ax.get_yaxis().set_ticklabels([])
     ax.set_zticklabels([])
 
-    ax.set_aspect('equal')
+    ax.set_aspect("equal")
 
     # Get rid of the panes (actually make them white).
     white = (1.0, 1.0, 1.0, 0.0)
@@ -76,7 +82,9 @@ def show_2d_pose(channels, ax, lcolor="#3498db", rcolor="#e74c3c", add_labels=Fa
         add_labels (bool, optional): Whether to add coordinate labels. Defaults to False.
     """
 
-    assert channels.size == len(H36M_NAMES) * 2, "channels should have 64 entries, it has {} instead.".format(channels.size)
+    assert (
+        channels.size == len(H36M_NAMES) * 2
+    ), "channels should have 64 entries, it has {} instead.".format(channels.size)
     vals = np.reshape(channels, (len(H36M_NAMES), -1))
 
     # XXX: Joint indices are hard coded.
@@ -106,4 +114,5 @@ def show_2d_pose(channels, ax, lcolor="#3498db", rcolor="#e74c3c", add_labels=Fa
     ax.get_xaxis().set_ticklabels([])
     ax.get_yaxis().set_ticklabels([])
 
-    ax.set_aspect('equal')
+    ax.set_aspect("equal")
+    ax.invert_yaxis()
