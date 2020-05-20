@@ -9,8 +9,7 @@ import h5py
 import numpy as np
 
 from .camera_utils import project_to_camrea
-from .camera_utils import \
-    transform_world_to_camera as transform_world_to_camera_base
+from .camera_utils import transform_world_to_camera as transform_world_to_camera_base
 
 # Human3.6m IDs for training and testing.
 TRAIN_SUBJECTS = [1, 5, 6, 7, 8]
@@ -57,10 +56,7 @@ def load_data(data_dir, subjects, actions):
         for act in actions:
             print(f"reading subject {subj}, action {act}...")
 
-            path = os.path.join(
-                data_dir,
-                f"S{subj}/MyPoses/3D_positions/{act}*.h5"
-            )
+            path = os.path.join(data_dir, f"S{subj}/MyPoses/3D_positions/{act}*.h5")
 
             fnames = glob(path)
 
@@ -82,7 +78,9 @@ def load_data(data_dir, subjects, actions):
                     poses = poses.T  # [N, 96]
                     data[(subj, act, seqname)] = poses
 
-            assert loaded_seqs == 2, f"Expecting 2 sequences, but found {loaded_seqs} instead."
+            assert (
+                loaded_seqs == 2
+            ), f"Expecting 2 sequences, but found {loaded_seqs} instead."
 
     return data
 
@@ -132,7 +130,7 @@ def postprocess_3d(poses_set):
 
         # Keep track of global position.
         root_begin = H36M_NAMES.index("Hip") * 3
-        root_position = copy.deepcopy(poses[:, root_begin: root_begin + 3])  # nx3
+        root_position = copy.deepcopy(poses[:, root_begin : root_begin + 3])  # nx3
 
         # Centerize around root.
         poses = poses - np.tile(root_position, [1, len(H36M_NAMES)])
@@ -164,7 +162,9 @@ def compute_normalization_stats(data, dim, predict_14=False):
 
     if dim == 2:
         # Get dimensions of 16 2d points to use.
-        dim_to_ignore = np.where(np.array([x in ["", "Neck/Nose"] for x in H36M_NAMES]))[0]
+        dim_to_ignore = np.where(
+            np.array([x in ["", "Neck/Nose"] for x in H36M_NAMES])
+        )[0]
         dim_to_ignore = np.sort(np.hstack([dim_to_ignore * 2, dim_to_ignore * 2 + 1]))
         dim_to_use = np.delete(np.arange(len(H36M_NAMES) * 2), dim_to_ignore)
     else:  # dim == 3
@@ -174,13 +174,13 @@ def compute_normalization_stats(data, dim, predict_14=False):
                 np.array([x in ["", "Hip", "Spine", "Neck/Nose"] for x in H36M_NAMES])
             )[0]
         else:  # predict 16 points
-            dim_to_ignore = np.where(np.array([x in ["", "Hip"] for x in H36M_NAMES]))[0]
+            dim_to_ignore = np.where(np.array([x in ["", "Hip"] for x in H36M_NAMES]))[
+                0
+            ]
 
-        dim_to_ignore = np.sort(np.hstack([
-            dim_to_ignore * 3,
-            dim_to_ignore * 3 + 1,
-            dim_to_ignore * 3 + 2
-        ]))
+        dim_to_ignore = np.sort(
+            np.hstack([dim_to_ignore * 3, dim_to_ignore * 3 + 1, dim_to_ignore * 3 + 2])
+        )
         dim_to_use = np.delete(np.arange(len(H36M_NAMES) * 3), dim_to_ignore)
 
     return data_mean, data_std, dim_to_ignore, dim_to_use
@@ -243,8 +243,9 @@ def read_3d_data(actions, data_dir, cams, camera_frame=True, predict_14=False):
 
     # Compute normalization statistics.
     train_concat = copy.deepcopy(np.vstack(list(train_set.values())))
-    data_mean, data_std, dim_to_ignore, dim_to_use = \
-        compute_normalization_stats(train_concat, dim=3, predict_14=predict_14)
+    data_mean, data_std, dim_to_ignore, dim_to_use = compute_normalization_stats(
+        train_concat, dim=3, predict_14=predict_14
+    )
 
     # Divide every dimension independently.
     train_set = normalize_data(train_set, data_mean, data_std, dim_to_use)
@@ -258,7 +259,7 @@ def read_3d_data(actions, data_dir, cams, camera_frame=True, predict_14=False):
         dim_to_ignore,
         dim_to_use,
         train_root_positions,
-        test_root_positions
+        test_root_positions,
     )
 
 
@@ -318,8 +319,9 @@ def create_2d_data(actions, data_dir, cams):
 
     # Compute normalization statistics.
     train_concat = copy.deepcopy(np.vstack(list(train_set.values())))
-    data_mean, data_std, dim_to_ignore, dim_to_use = \
-        compute_normalization_stats(train_concat, dim=2, predict_14=False)
+    data_mean, data_std, dim_to_ignore, dim_to_use = compute_normalization_stats(
+        train_concat, dim=2, predict_14=False
+    )
 
     # Divide every dimension independently.
     train_set = normalize_data(train_set, data_mean, data_std, dim_to_use)

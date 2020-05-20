@@ -71,11 +71,15 @@ def project_to_camrea(P, R, T, f, c, k, p):
 
     # Radial distorsion term
     r2 = XX[0, :] ** 2 + XX[1, :] ** 2
-    radial = 1 + np.einsum('ij,ij->j', np.tile(k, (1, N)), np.array([r2, r2 ** 2, r2 ** 3]))
+    radial = 1 + np.einsum(
+        "ij,ij->j", np.tile(k, (1, N)), np.array([r2, r2 ** 2, r2 ** 3])
+    )
     # Tangential distorsion term.
     tan = p[0] * XX[1, :] + p[1] * XX[0, :]
     # Apply the distorsions.
-    XXX = XX * np.tile(radial + tan, (2, 1)) + np.outer(np.array([p[1], p[0]]).reshape(-1), r2)
+    XXX = XX * np.tile(radial + tan, (2, 1)) + np.outer(
+        np.array([p[1], p[0]]).reshape(-1), r2
+    )
 
     # Project to camera.
     projected = f * XXX + c
@@ -130,9 +134,11 @@ def load_cameras(camera_h5_path, subjects=[1, 5, 6, 7, 8, 9, 11]):
     """
     cams = {}
 
-    with h5py.File(camera_h5_path, 'r') as hf:
+    with h5py.File(camera_h5_path, "r") as hf:
         for subj in subjects:
-            for cam_idx in range(1, 5):  # Human3.6M has 4 cameras (#1~5) for each subject.
+            for cam_idx in range(
+                1, 5
+            ):  # Human3.6M has 4 cameras (#1~5) for each subject.
                 base_path = f"subject{subj}/camera{cam_idx}"
                 cams[(subj, cam_idx)] = load_camera_params(hf, base_path)
 
