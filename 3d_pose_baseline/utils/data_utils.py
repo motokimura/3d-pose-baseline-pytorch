@@ -85,11 +85,11 @@ def load_data(data_dir, subjects, actions):
     return data
 
 
-def transform_world_to_camera(poses_set, cams, ncams=4):
+def transform_world_to_camera(pose_set, cams, ncams=4):
     """Transform 3d poses from world coordinate to camera coordinate.
 
     Args:
-        poses_set (dict[tuple, numpy.array]): Dictionary with 3d poses.
+        pose_set (dict[tuple, numpy.array]): Dictionary with 3d poses.
         cams (dict[tuple, tuple]): Dictionary with cameras.
         ncams (int, optional): Number of cameras per subject. Defaults to 4.
 
@@ -97,9 +97,9 @@ def transform_world_to_camera(poses_set, cams, ncams=4):
         t3d_camera (dict[tuple, numpy.array]): Dictionary with 3d poses in camera coordinate.
     """
     t3d_camera = {}
-    for t3dk in sorted(poses_set.keys()):
+    for t3dk in sorted(pose_set.keys()):
         subj, act, seqname = t3dk
-        t3d_world = poses_set[t3dk]  # nx(32x3)
+        t3d_world = pose_set[t3dk]  # nx(32x3)
         t3d_world = t3d_world.reshape((-1, 3))  # (nx32)x3
 
         for cam_idx in range(1, ncams + 1):
@@ -114,19 +114,19 @@ def transform_world_to_camera(poses_set, cams, ncams=4):
     return t3d_camera
 
 
-def postprocess_3d(poses_set):
+def postprocess_3d(pose_set):
     """Centerize 3d joint points around root joint.
 
     Args:
-        poses_set (dict[tuple, numpy.array]): Dictionary with 3d data.
+        pose_set (dict[tuple, numpy.array]): Dictionary with 3d data.
 
     Returns:
-        poses_set (dict[tuple, numpy.array]): Dictionary with 3d data centred around root (center hip) joint.
+        pose_set (dict[tuple, numpy.array]): Dictionary with 3d data centred around root (center hip) joint.
         root_positions (dict[tuple, numpy.array]): Dictionary with the original 3d position of each pose.
     """
     root_positions = {}
-    for k in sorted(poses_set.keys()):
-        poses = poses_set[k]  # nx(32x3)
+    for k in sorted(pose_set.keys()):
+        poses = pose_set[k]  # nx(32x3)
 
         # Keep track of global position.
         root_begin = H36M_NAMES.index("Hip") * 3
@@ -135,10 +135,10 @@ def postprocess_3d(poses_set):
         # Centerize around root.
         poses = poses - np.tile(root_position, [1, len(H36M_NAMES)])
 
-        poses_set[k] = poses
+        pose_set[k] = poses
         root_positions[k] = root_position
 
-    return poses_set, root_positions
+    return pose_set, root_positions
 
 
 def compute_normalization_stats(data, dim, predict_14=False):
@@ -263,11 +263,11 @@ def read_3d_data(actions, data_dir, cams, camera_frame=True, predict_14=False):
     )
 
 
-def project_to_camreas(poses_set, cams, ncams=4):
+def project_to_camreas(pose_set, cams, ncams=4):
     """Project 3d poses using camera parameters.
 
     Args:
-        poses_set (dict[tuple, numpy.array]): Dictionary with 3d poses.
+        pose_set (dict[tuple, numpy.array]): Dictionary with 3d poses.
         cams (dict[tuple, tuple]): Dictionary with cameras.
         ncams (int, optional): Number of cameras per subject. Defaults to 4.
 
@@ -276,9 +276,9 @@ def project_to_camreas(poses_set, cams, ncams=4):
     """
     t2d = {}
 
-    for t3dk in sorted(poses_set.keys()):
+    for t3dk in sorted(pose_set.keys()):
         subj, act, seqname = t3dk
-        t3d = poses_set[t3dk]  # nx(32x3)
+        t3d = pose_set[t3dk]  # nx(32x3)
         t3d = t3d.reshape((-1, 3))  # (nx32)x3
 
         for cam_idx in range(1, ncams + 1):
