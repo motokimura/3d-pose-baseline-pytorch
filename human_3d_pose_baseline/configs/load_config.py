@@ -30,4 +30,7 @@ def load_config():
         config.merge_from_list(args.opts)
     config.freeze()
 
+    print("Successfully loaded config:")
+    print(config)
+
     return config
