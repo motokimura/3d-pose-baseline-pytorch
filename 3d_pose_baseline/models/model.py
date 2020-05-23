@@ -5,6 +5,25 @@
 import torch.nn as nn
 
 
+def init_weights(module):
+    """Initialize weights of the linear model.
+
+    Our initialization scheme is different from the official implementation in TensorFlow.
+    Official one inits bias of linear layer with kaiming normal but we init with 0.
+    Also we init weights of batchnorm layer with 1 and bias with 0.
+    We have not investigated if this affects the accuracy.
+
+    Args:
+        module (torch.nn.Module): torch.nn.Module composing the linear model.
+    """
+    if isinstance(module, nn.Linear):
+        nn.init.kaiming_normal_(module.weight.data, mode="fan_in", nonlinearity="relu")
+        module.bias.data.zero_()
+    if isinstance(module, nn.BatchNorm1d):
+        module.weight.data.fill_(1)
+        module.bias.data.zero_()
+
+
 class Linear(nn.Module):
     def __init__(self, linear_size, p_dropout):
         """Construct the linear block.
@@ -72,6 +91,9 @@ class LinearModel(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(p_dropout)
+
+        # initialize model weights
+        self.apply(init_weights)
 
     def forward(self, x):
         """Forward operations of the linear block.
