@@ -3,6 +3,7 @@ h5py
 numpy
 tqdm
 torch==1.5.0
+yacs
 
 # misc
 flake8
