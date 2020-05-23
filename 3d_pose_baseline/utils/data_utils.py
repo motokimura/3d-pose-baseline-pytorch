@@ -15,7 +15,26 @@ from .camera_utils import transform_world_to_camera as transform_world_to_camera
 TRAIN_SUBJECTS = [1, 5, 6, 7, 8]
 TEST_SUBJECTS = [9, 11]
 
-# Joints in Human3.6M;
+# Actions defined in Human3.6M.
+H36M_ACTIONS = [
+    "Directions",
+    "Discussion",
+    "Eating",
+    "Greeting",
+    "Phoning",
+    "Photo",
+    "Posing",
+    "Purchases",
+    "Sitting",
+    "SittingDown",
+    "Smoking",
+    "Waiting",
+    "WalkDog",
+    "Walking",
+    "WalkTogether",
+]
+
+# Joints in Human3.6M.
 # data has 32 joints, but only 17 that move.
 H36M_NAMES = [""] * 32
 H36M_NAMES[0] = "Hip"
@@ -54,7 +73,7 @@ def load_data(data_dir, subjects, actions):
     data = {}
     for subj in subjects:
         for act in actions:
-            print(f"reading subject {subj}, action {act}...")
+            # print(f"reading subject {subj}, action {act}...")
 
             path = os.path.join(data_dir, f"S{subj}/MyPoses/3D_positions/{act}*.h5")
 
@@ -69,7 +88,7 @@ def load_data(data_dir, subjects, actions):
                     continue
 
                 if seqname.startswith(act):
-                    print(fname)
+                    # print(fname)
                     loaded_seqs += 1
 
                     with h5py.File(fname, "r") as f:

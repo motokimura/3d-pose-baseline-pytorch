@@ -8,14 +8,13 @@ from torch.utils.data import Dataset
 
 
 class Human36M(Dataset):
-    def __init__(self, pose_set_2d, pose_set_3d, camera_frame=True, shuffle=False):
-        """Construct Human3.6M dataset.
+    def __init__(self, pose_set_2d, pose_set_3d, camera_frame=True):
+        """
 
         Args:
             pose_set_2d (dict[tuple, numpy.array]): 2d pose set.
             pose_set_3d (dict[tuple, numpy.array]): 3d pose set.
             camera_frame (bool, optional): Make this True if pose_set_3d is in camera coordinates. Defaults to True.
-            shuffle (bool, optional): Make this True to shuffle 2d/3d pose pairs. Defaults to False.
         """
         self.poses_2d = []
         self.poses_3d = []
@@ -36,12 +35,6 @@ class Human36M(Dataset):
         self.poses_3d = np.vstack(self.poses_3d)
 
         assert len(self.poses_2d) == len(self.poses_3d)
-
-        if shuffle:
-            n = len(self.poses_2d)
-            idxs = np.random.permutation(n)
-            self.poses_2d = self.poses_2d[idxs]
-            self.poses_3d = self.poses_3d[idxs]
 
     def __getitem__(self, idx):
         """Get a pair of 2d and 3d pose.
