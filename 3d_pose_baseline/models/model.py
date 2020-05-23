@@ -26,7 +26,7 @@ def init_weights(module):
 
 class Linear(nn.Module):
     def __init__(self, linear_size, p_dropout):
-        """Construct the linear block.
+        """
 
         Args:
             linear_size (int): Number of nodes in the linear layers.
@@ -68,7 +68,7 @@ class Linear(nn.Module):
 
 class LinearModel(nn.Module):
     def __init__(self, linear_size=1024, num_stages=2, p_dropout=0.5, predict_14=False):
-        """Construct the linear model.
+        """
 
         Args:
             linear_size (int, optional): Number of nodes in the linear layers. Defaults to 1024.
