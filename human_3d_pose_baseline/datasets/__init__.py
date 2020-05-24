@@ -15,10 +15,10 @@ def get_dataset(config):
     Returns:
         (Human36MDatasetHandler): Human3.6M dataset.
     """
-    return Human36MDatasetHandler(config)
+    return Human36M_DatasetHandler(config)
 
 
-class Human36MDatasetHandler:
+class Human36M_DatasetHandler:
     def __init__(self, config):
         """
 
