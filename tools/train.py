@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
+import os
+
 import torch
+from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
 from _init_path import init_path
@@ -27,16 +30,44 @@ def main():
     lr_scheduler = get_lr_scheduler(config, optimizer)
     device = get_device(config.USE_CUDA)
 
-    for epoch in range(config.SOLVER.EPOCHS):
-        print(f"Epoch: {epoch}")
+    # Prepare directory to output training logs and model weights.
+    out_dir = config.OUTPUT_DIR
+    os.makedirs(out_dir, exist_ok=False)
+    # Prepare tensorboard logger.
+    tblogger = SummaryWriter(out_dir)
 
+    mpjpe_lowest = 1e10
+
+    for epoch in range(config.SOLVER.EPOCHS):
+        lr = lr_scheduler.get_lr()[0]
+        tblogger.add_scalar("lr", lr, epoch)
+        print(f"epoch: {epoch}, lr: {lr}")
+
+        # Training.
         print("Training...")
         train_logs = train_epoch(
             config, model, criterion, optimizer, lr_scheduler, human36m, device
         )
 
+        train_loss = train_logs["loss"]
+        tblogger.add_scalar("train/loss", train_loss, epoch)
+        print(f"train_loss: {train_loss}")
+
+        # Testing.
         print("Testing...")
         test_logs = test_epoch(config, model, criterion, human36m, device)
+
+        test_loss = test_logs["loss"]
+        mpjpe = test_logs["mean_per_joint_position_error"]
+        tblogger.add_scalar("test/loss", test_loss, epoch)
+        tblogger.add_scalar("test/mpjpe", mpjpe, epoch)
+        print(f"test_loss: {test_loss}, mpjpe[mm]: {mpjpe}")
+
+        # Save model weight if lowest error is updated.
+        if mpjpe < mpjpe_lowest:
+            torch.save(model.state_dict(), os.path.join(out_dir, "model_best.pth"))
+            mpjpe_lowest = mpjpe
+            print("Lowest MPJPE updated! Saved model weight.")
 
 
 if __name__ == "__main__":

@@ -34,9 +34,7 @@ _C.SOLVER.LR_DECAY_STEP = 100000
 _C.SOLVER.LR_DECAY_GAMMA = 0.96
 
 # Misc.
-_C.EXP_ID = 99999
-_C.TFBOARD_DIR = "./logs"
-_C.WEIGHT_DIR = "./weights"
+_C.OUTPUT_DIR = "./results"
 _C.USE_CUDA = False
 
 

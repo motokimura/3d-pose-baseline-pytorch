@@ -47,12 +47,13 @@ class Human36M_JointErrorEvaluator:
         Returns:
             [type]: [description]
         """
-        error = np.mean(self.joint_distances)  # float
-        error_per_joint = np.mean(self.joint_distances, axis=0)  # [n_joints,]
+        mean_per_joint_position_error = np.mean(self.joint_distances)  # float
+        per_joint_position_error = np.mean(self.joint_distances, axis=0)  # [n_joints,]
 
-        print(error)
-
-        metrics = {"error": error, "error_per_joint": error_per_joint}
+        metrics = {
+            "mean_per_joint_position_error": mean_per_joint_position_error,
+            "per_joint_position_error": per_joint_position_error,
+        }
         return metrics
 
     def _preprocess_poses(self, poses_3d):

@@ -9,3 +9,5 @@ yacs
 flake8
 jupyterlab
 matplotlib==3.0.3
+tensorboard
+tensorboardX
