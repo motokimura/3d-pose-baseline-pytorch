@@ -29,7 +29,6 @@ _C.MODEL.PREDICT_14 = False
 # Model optimization settings.
 _C.SOLVER = CN()
 _C.SOLVER.EPOCHS = 200
-_C.SOLVER.OPTIMIZER = "adam"
 _C.SOLVER.LR = 1e-3
 _C.SOLVER.LR_DECAY_DELTA_ITRE = 100000
 _C.SOLVER.LR_DECAY_GAMMA = 0.96
@@ -38,6 +37,7 @@ _C.SOLVER.LR_DECAY_GAMMA = 0.96
 _C.EXP_ID = 99999
 _C.TFBOARD_DIR = "./logs"
 _C.WEIGHT_DIR = "./weights"
+_C.USE_CUDA = False
 
 
 def get_default_config():
