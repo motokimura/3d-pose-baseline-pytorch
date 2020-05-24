@@ -35,7 +35,7 @@ _C.SOLVER.LR_DECAY_GAMMA = 0.96
 
 # Misc.
 _C.OUTPUT_DIR = "./results"
-_C.USE_CUDA = False
+_C.USE_CUDA = True
 
 
 def get_default_config():
