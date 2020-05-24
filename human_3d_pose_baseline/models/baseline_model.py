@@ -6,7 +6,7 @@ import torch.nn as nn
 
 
 def init_weights(module):
-    """Initialize weights of the linear model.
+    """Initialize weights of the baseline linear model.
 
     Our initialization scheme is different from the official implementation in TensorFlow.
     Official one inits bias of linear layer with kaiming normal but we init with 0.
@@ -14,7 +14,7 @@ def init_weights(module):
     We have not investigated if this affects the accuracy.
 
     Args:
-        module (torch.nn.Module): torch.nn.Module composing the linear model.
+        module (torch.nn.Module): torch.nn.Module composing the baseline linear model.
     """
     if isinstance(module, nn.Linear):
         nn.init.kaiming_normal_(module.weight.data, mode="fan_in", nonlinearity="relu")
@@ -66,7 +66,7 @@ class Linear(nn.Module):
         return y
 
 
-class LinearModel(nn.Module):
+class BaselineModel(nn.Module):
     def __init__(self, linear_size=1024, num_stages=2, p_dropout=0.5, predict_14=False):
         """
 
@@ -76,7 +76,7 @@ class LinearModel(nn.Module):
             p_dropout (float, optional): Dropout probability. Defaults to 0.5.
             predict_14 (bool, optional): Whether to predict 14 3d-joints. Defaults to False.
         """
-        super(LinearModel, self).__init__()
+        super(BaselineModel, self).__init__()
 
         input_size = 16 * 2  # Input 2d-joints.
         output_size = 14 * 3 if predict_14 else 16 * 3  # Output 3d-joints.
