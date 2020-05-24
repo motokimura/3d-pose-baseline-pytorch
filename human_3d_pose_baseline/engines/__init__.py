@@ -1,6 +1,8 @@
 import torch
 from tqdm import tqdm
 
+from ..evaluators import get_evaluator
+
 
 def train_epoch(config, model, criterion, optimizer, lr_scheduler, human36m, device):
     """Train the model for an epoch.
@@ -35,8 +37,9 @@ def train_epoch(config, model, criterion, optimizer, lr_scheduler, human36m, dev
         num_samples += batch_size
 
     average_loss = sum_loss / num_samples
+    metrics = {"loss": average_loss}
 
-    return {"loss": average_loss}
+    return metrics
 
 
 def test_epoch(config, model, criterion, human36m, device):
@@ -52,6 +55,8 @@ def test_epoch(config, model, criterion, human36m, device):
     Returns:
         [type]: [description]
     """
+    evaluator = get_evaluator(config, human36m)  # Joint error evaluator.
+
     model.eval()
 
     sum_loss, num_samples = 0, 0
@@ -66,6 +71,17 @@ def test_epoch(config, model, criterion, human36m, device):
             sum_loss += loss.item() * batch_size
             num_samples += batch_size
 
-    average_loss = sum_loss / num_samples
+            # Joint error evaluation.
+            evaluator.add_samples(
+                pred_3d_poses=output.data.cpu().numpy(),
+                truth_3d_poses=target.data.cpu().numpy(),
+            )
 
-    return {"loss": average_loss}
+    metrics = evaluator.get_metrics()
+
+    # Add average test loss to the metric dictionary.
+    average_loss = sum_loss / num_samples
+    assert "loss" not in metrics
+    metrics["loss"] = average_loss
+
+    return metrics
