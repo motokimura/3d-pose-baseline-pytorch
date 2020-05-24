@@ -6,6 +6,18 @@ from ..utils import camera_utils, data_utils
 from .human36m import Human36M
 
 
+def get_dataset(config):
+    """Get Human3.6M dataset.
+
+    Args:
+        config (yacs.config.CfgNode): Configuration.
+
+    Returns:
+        (Human36MDatasetHandler): Human3.6M dataset.
+    """
+    return Human36MDatasetHandler(config)
+
+
 class Human36MDatasetHandler:
     def __init__(self, config):
         """
@@ -22,6 +34,7 @@ class Human36MDatasetHandler:
         )
 
         # Load Human3.6M 3d poses.
+        print("Loading 3d poses...")
         (
             self.poses_3d_train,
             self.poses_3d_test,
@@ -38,8 +51,10 @@ class Human36MDatasetHandler:
             camera_frame=config.DATA.POSE_IN_CAMERA_FRAME,
             predict_14=config.MODEL.PREDICT_14,
         )
+        print("Done!")
 
         # Load Human3.6M 2d poses.
+        print("Loading 2d poses...")
         (
             self.poses_2d_train,
             self.poses_2d_test,
@@ -48,6 +63,7 @@ class Human36MDatasetHandler:
             self.dim_to_ignore_2d,
             self.dim_to_use_2d,
         ) = data_utils.create_2d_data(self.actions, config.DATA.HM36M_DIR, self.cams)
+        print("Done!")
 
         # Create pytorch dataloaders for train and test set.
         self.train_dataloader = self._get_dataloaders(
