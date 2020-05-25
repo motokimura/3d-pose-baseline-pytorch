@@ -12,6 +12,8 @@ def get_evaluator(config, human36m):
         Human36M_JointErrorEvaluator: Human3.6M joint error evaluator.
     """
     evaluator = Human36M_JointErrorEvaluator(
-        human36m, predict_14=config.MODEL.PREDICT_14
+        human36m,
+        predict_14=config.MODEL.PREDICT_14,
+        apply_procrustes=config.EVAL.APPLY_PROCRUSTES_ALIGNMENT,
     )
     return evaluator

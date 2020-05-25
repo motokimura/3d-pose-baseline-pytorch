@@ -3,19 +3,21 @@
 
 import numpy as np
 
-from ..utils import data_utils
+from ..utils import data_utils, procrustes
 
 
 class Human36M_JointErrorEvaluator:
-    def __init__(self, human36m, predict_14=False):
+    def __init__(self, human36m, predict_14=False, apply_procrustes_alignment=False):
         """
 
         Args:
             human36m (Human36MDatasetHandler): Human3.6M dataset.
             predict_14 (bool, optional): Whether to predict 14 3d-joints. Defaults to False.
+            apply_procrustes_alignment (bool, optional): Whether to apply procrustes alignment to the predicted poses.
         """
         self.human36m = human36m
         self.predict_14 = predict_14
+        self.apply_procrustes_alignment = apply_procrustes_alignment
 
         self.n_joints = (
             14 if self.predict_14 else 17
@@ -37,6 +39,12 @@ class Human36M_JointErrorEvaluator:
         """
         pred = self._preprocess_poses(pred_3d_poses)  # [batch_size, n_joints x 3]
         truth = self._preprocess_poses(truth_3d_poses)  # [batch_size, n_joints x 3]
+
+        if self.apply_procrustes_alignment:
+            pred = self._apply_procrustes_alignment(
+                sources=pred, targets=truth
+            )  # [batch_size, n_joints x 3]
+
         d = self._compute_joint_distances(pred, truth)  # [batch_size, n_joints]
 
         self.joint_distances = np.vstack([self.joint_distances, d])  # [N, n_joints]
@@ -78,6 +86,23 @@ class Human36M_JointErrorEvaluator:
         poses = poses[:, dim_to_keep]  # [batch_size, n_joints x 3]
 
         return poses
+
+    def _apply_procrustes_alignment(self, sources, targets):
+        sources_aligned = []
+
+        batch_size = len(sources)
+        for i in range(batch_size):
+            target = targets[i].reshape(-1, 3)  # [n_joints, 3]
+            source = sources[i].reshape(-1, 3)  # [n_joints, 3]
+            _, _, T, b, c = procrustes.compute_similarity_transform(
+                target, source, compute_optimal_scale=True
+            )
+            aligned = (b * source.dot(T)) + c
+            aligned = aligned.reshape((-1, self.n_joints * 3))  # [1, n_joints x 3]
+
+            sources_aligned.append(aligned)
+
+        return np.vstack(sources_aligned)  # [batch_size, n_joints x 3]
 
     def _compute_joint_distances(self, pred, truth):
         # Compute Euclidean distance error per joint.
