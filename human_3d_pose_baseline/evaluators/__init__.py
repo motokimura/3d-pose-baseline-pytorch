@@ -2,14 +2,14 @@ from .evaluator import Human36M_JointErrorEvaluator
 
 
 def get_evaluator(config, human36m):
-    """[summary]
+    """Get Human3.6M joint error evaluator.
 
     Args:
-        config ([type]): [description]
-        human36m ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
+        human36m (Human36MDatasetHandler): Human3.6M dataset.
 
     Returns:
-        [type]: [description]
+        Human36M_JointErrorEvaluator: Human3.6M joint error evaluator.
     """
     evaluator = Human36M_JointErrorEvaluator(
         human36m, predict_14=config.MODEL.PREDICT_14

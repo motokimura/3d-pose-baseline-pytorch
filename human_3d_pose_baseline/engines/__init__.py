@@ -8,16 +8,16 @@ def train_epoch(config, model, criterion, optimizer, lr_scheduler, human36m, dev
     """Train the model for an epoch.
 
     Args:
-        config ([type]): [description]
-        model ([type]): [description]
-        criterion ([type]): [description]
-        optimizer ([type]): [description]
-        lr_scheduler ([type]): [description]
-        human36m ([type]): [description]
-        device ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
+        model (torch.nn.Module): Model to train.
+        criterion (torch.nn.Module): Loss function.
+        optimizer (torch.optimizer): Optimizer for training
+        lr_scheduler (torch.lr_sceduler): Learning scheduler for training.
+        human36m (Human36MDatasetHandler): Human3.6M dataset.
+        device (torch.device): CUDA device to use for training.
 
     Returns:
-        [type]: [description]
+        (dict): training results.
     """
     model.train()
 
@@ -46,14 +46,14 @@ def test_epoch(config, model, criterion, human36m, device):
     """Evaluate the model.
 
     Args:
-        config ([type]): [description]
-        model ([type]): [description]
-        criterion ([type]): [description]
-        human36m ([type]): [description]
-        device ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
+        model (torch.nn.Module): Model to test.
+        criterion (torch.nn.Module): Loss function.
+        human36m (Human36MDatasetHandler): Human3.6M dataset.
+        device (torch.device): CUDA device to use for training.
 
     Returns:
-        [type]: [description]
+        (dict): evaluation results.
     """
     evaluator = get_evaluator(config, human36m)  # Joint error evaluator.
 

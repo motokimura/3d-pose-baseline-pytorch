@@ -2,7 +2,7 @@ import torch
 
 
 def get_device(use_cuda=True):
-    """[summary]
+    """Get CUDA or CPU device used for model training/evaluation.
 
     Args:
         use_cuda (bool, optional): True if use CUDA.

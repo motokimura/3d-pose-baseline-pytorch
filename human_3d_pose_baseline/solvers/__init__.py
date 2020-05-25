@@ -5,13 +5,13 @@ from ..utils.cuda import get_device
 
 
 def get_criterion(config):
-    """[summary]
+    """Get criterion (loss) to train models.
 
     Args:
-        config ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
 
     Returns:
-        [type]: [description]
+        (torch.nn.Module): Loss function.
     """
     criterion = nn.MSELoss(reduction="mean")
 
@@ -22,14 +22,14 @@ def get_criterion(config):
 
 
 def get_lr_scheduler(config, optimizer):
-    """[summary]
+    """Get learning rate scheduler to train models.
 
     Args:
-        config ([type]): [description]
-        optimizer ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
+        optimizer (torch.optimizer): Optimizer.
 
     Returns:
-        [type]: [description]
+        (torch.lr_scheduler): Learning rate scheduler.
     """
     gamma = config.SOLVER.LR_DECAY_GAMMA
     decay_step = config.SOLVER.LR_DECAY_STEP
@@ -40,14 +40,14 @@ def get_lr_scheduler(config, optimizer):
 
 
 def get_optimizer(config, model):
-    """[summary]
+    """Get optimizer to train models.
 
     Args:
-        config ([type]): [description]
-        model ([type]): [description]
+        config (yacs.config.CfgNode): Configuration.
+        model (torch.nn.Module): Model to train.
 
     Returns:
-        [type]: [description]
+        (torch.optimizer): Optimizer.
     """
     optimizer = optim.Adam(model.parameters(), lr=config.SOLVER.LR)
     return optimizer
