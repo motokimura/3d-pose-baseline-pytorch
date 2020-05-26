@@ -33,6 +33,10 @@ _C.SOLVER.LR = 1e-3
 _C.SOLVER.LR_DECAY_STEP = 100000
 _C.SOLVER.LR_DECAY_GAMMA = 0.96
 
+# Model evaluation settings.
+_C.EVAL = CN()
+_C.EVAL.APPLY_PROCRUSTES_ALIGNMENT = False
+
 # Misc.
 _C.OUTPUT_DIR = "./results"
 _C.USE_CUDA = True
