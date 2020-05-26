@@ -26,7 +26,7 @@ class Human36M_JointErrorEvaluator:
     def reset(self):
         """Remove all samples added so far.
         """
-        self.joint_distances = np.zeros(shape=(0, self.n_joints))
+        self.joint_distances = []
 
     def add_samples(self, pred_3d_poses, truth_3d_poses):
         """Add pairs of predicted and ground-truth poses to evaluate.
@@ -39,7 +39,7 @@ class Human36M_JointErrorEvaluator:
         truth = self._preprocess_poses(truth_3d_poses)  # [batch_size, n_joints x 3]
         d = self._compute_joint_distances(pred, truth)  # [batch_size, n_joints]
 
-        self.joint_distances = np.vstack([self.joint_distances, d])  # [N, n_joints]
+        self.joint_distances.append(d)
 
     def get_metrics(self):
         """Get evaluation results.
@@ -47,8 +47,10 @@ class Human36M_JointErrorEvaluator:
         Returns:
             (dict): evaluation results.
         """
-        mean_per_joint_position_error = np.mean(self.joint_distances)  # float
-        per_joint_position_error = np.mean(self.joint_distances, axis=0)  # [n_joints,]
+        joint_distances = np.vstack(self.joint_distances)  # [N, n_joints]
+
+        mean_per_joint_position_error = np.mean(joint_distances)  # float
+        per_joint_position_error = np.mean(joint_distances, axis=0)  # [n_joints,]
 
         metrics = {
             "mean_per_joint_position_error": mean_per_joint_position_error,
