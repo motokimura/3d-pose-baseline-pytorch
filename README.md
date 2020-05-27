@@ -12,10 +12,10 @@ Todo:
 ### Protocol #1 (no rigid alignment in post-processing)
 
 MPJPE [mm]:
-|        | Avg      |  Direct |   Discuss   |  Eating   | Greet  | Phone  | Photo | Pose  | Purch  | Sitting   | SittingD   | Smoke   |  Wait   | WaitD   | Walk   | WalkT   |
+|        | Avg      |  Direct |   Discuss   |  Eating   | Greet  | Phone  | Photo | Pose  | Purch  | Sitting   | SittingD   | Smoke   |  Wait   | WalkD   | Walk   | WalkT   |
 | :-------- | --------: | --------:| :------: |--------: | --------:| :------: |--------: | --------:| :------: |--------: | --------:| ------: |--------: | --------:| ------: |------: |
 | Paper     | 45.5  | 37.7 | 44.4 | 40.3 | 42.1 | 48.2 | 54.9 | 44.4 | 42.1 | 54.6 | 58.0 | 45.1 | 46.4 | 47.6 | 36.4 | 40.4 |
-| This repo | 43.3  | 35.7 | 41.6 | 40.1 | 40.4 | 45.0 | 52.0 | 42.9 | 38.0 | 53.2 | 55.4 | 43.5 | 43.3 | 43.3 | 35.6 | 33.7 |
+| This repo | 43.3  | 35.7 | 41.6 | 40.1 | 40.4 | 45.0 | 52.0 | 42.9 | 38.0 | 53.2 | 55.4 | 43.5 | 43.3 | 43.3 | 33.7 | 35.6 |
 
 Both were trained on truth 2D poses input and multiple actions.
 
