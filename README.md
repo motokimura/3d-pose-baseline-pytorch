@@ -1,6 +1,6 @@
 # 3d-pose-baseline-pytorch
 
-PyTorch implementation of [*A simple yet effective baseline for 3d human pose estimation*](https://arxiv.org/abs/1705.03098).
+PyTorch implementation of [*A simple yet effective baseline for 3d human pose estimation [Martinez+, ICCV'17]*](https://arxiv.org/abs/1705.03098).
 
 Todo:
 - [ ] Performance evaluation
@@ -31,13 +31,21 @@ $ pip install -r requirements.txt
 
 ## Usage
 
-### Training
+### Train model
 
 ```
 $ ./tools/train.py OUTPUT_DIR ./output
 ```
 
 You'll find trained weight and tensorboard event file under `./output` directory.
+
+### Evaluate model
+
+```
+$ ./tools/test.py OUTPUT_DIR ./output MODEL.WEIGHT ${PATH_TO_WEIGHT}
+```
+
+You'll find evaluation results in a JSON file under `./output` directory.
 
 ## Paper
 
