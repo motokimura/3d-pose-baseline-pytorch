@@ -69,7 +69,7 @@ class Human36M_JointErrorEvaluator:
         pjpe = np.mean(joint_distances, axis=0)  # per joint position error: [n_joints,]
         metrics = {
             "MPJPE": mpjpe,
-            "PJPE": pjpe.tolst(),
+            "PJPE": pjpe.tolist(),
         }
 
         # Evaluate joint position error per action.
