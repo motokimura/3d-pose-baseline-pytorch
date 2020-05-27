@@ -35,6 +35,24 @@ _C.SOLVER.LR_DECAY_GAMMA = 0.96
 
 # Model evaluation settings.
 _C.EVAL = CN()
+_C.EVAL.METRICS_TO_LOG = [
+    "MPJPE",
+    "MPJPE/Directions",
+    "MPJPE/Discussion",
+    "MPJPE/Eating",
+    "MPJPE/Greeting",
+    "MPJPE/Phoning",
+    "MPJPE/Photo",
+    "MPJPE/Posing",
+    "MPJPE/Purchases",
+    "MPJPE/Sitting",
+    "MPJPE/SittingDown",
+    "MPJPE/Smoking",
+    "MPJPE/Waiting",
+    "MPJPE/WalkDog",
+    "MPJPE/Walking",
+    "MPJPE/WalkTogether",
+]
 _C.EVAL.APPLY_PROCRUSTES_ALIGNMENT = False
 
 # Misc.
