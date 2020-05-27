@@ -23,8 +23,9 @@ def train_epoch(config, model, criterion, optimizer, lr_scheduler, human36m, dev
 
     sum_loss, num_samples = 0, 0
 
-    for data, target in tqdm(human36m.train_dataloader):
-        data, target = data.to(device), target.to(device)
+    for batch in tqdm(human36m.train_dataloader):
+        data = batch["pose_2d"].to(device)
+        target = batch["pose_3d"].to(device)
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
@@ -62,8 +63,9 @@ def test_epoch(config, model, criterion, human36m, device):
     sum_loss, num_samples = 0, 0
 
     with torch.no_grad():
-        for data, target in tqdm(human36m.test_dataloader):
-            data, target = data.to(device), target.to(device)
+        for batch in tqdm(human36m.test_dataloader):
+            data = batch["pose_2d"].to(device)
+            target = batch["pose_3d"].to(device)
             output = model(data)
             loss = criterion(output, target)
 
@@ -72,9 +74,11 @@ def test_epoch(config, model, criterion, human36m, device):
             num_samples += batch_size
 
             # Joint error evaluation.
+            action = batch["action"]  # Used for per action evaluation.
             evaluator.add_samples(
                 pred_3d_poses=output.data.cpu().numpy(),
                 truth_3d_poses=target.data.cpu().numpy(),
+                actions=action,
             )
 
     metrics = evaluator.get_metrics()

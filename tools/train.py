@@ -42,8 +42,7 @@ def main():
         print()
 
         lr = lr_scheduler.get_last_lr()[0]
-        tblogger.add_scalar("lr", lr, epoch)
-        print(f"epoch: {epoch}, lr: {lr : .10f}")
+        print(f"epoch: {epoch}, lr: {lr:.10f}")
 
         # Training.
         print("Training...")
@@ -51,25 +50,29 @@ def main():
             config, model, criterion, optimizer, lr_scheduler, human36m, device
         )
 
-        train_loss = train_logs["loss"]
-        tblogger.add_scalar("train/loss", train_loss, epoch)
-        print(f"train_loss: {train_loss : .8f}")
-
         # Testing.
         print("Testing...")
         test_logs = test_epoch(config, model, criterion, human36m, device)
 
-        test_loss = test_logs["loss"]
-        mpjpe = test_logs["mean_per_joint_position_error"]
-        tblogger.add_scalar("test/loss", test_loss, epoch)
-        tblogger.add_scalar("test/mpjpe", mpjpe, epoch)
-        print(f"test_loss: {test_loss : .8f}, mpjpe[mm]: {mpjpe : .4f}")
-
         # Save model weight if lowest error is updated.
+        mpjpe = test_logs["MPJPE"]
         if mpjpe < mpjpe_lowest:
             torch.save(model.state_dict(), os.path.join(out_dir, "model_best.pth"))
             mpjpe_lowest = mpjpe
-            print("Test score updated! Saved model weight.")
+
+        # Print.
+        train_loss = train_logs["loss"]
+        test_loss = test_logs["loss"]
+        print(
+            f"train_loss: {train_loss:.8f}, test_loss: {test_loss:.8f}, MPJPE: {mpjpe:.4f}, MPJPE(best): {mpjpe_lowest:.4f}"
+        )
+
+        # Log.
+        tblogger.add_scalar("lr", lr, epoch)
+        tblogger.add_scalar("train/loss", train_loss, epoch)
+        tblogger.add_scalar("test/loss", test_loss, epoch)
+        for metric in config.EVAL.METRICS_TO_LOG:
+            tblogger.add_scalar(f"test/{metric}", test_logs[metric], epoch)
 
 
 if __name__ == "__main__":

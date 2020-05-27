@@ -18,6 +18,7 @@ class Human36M(Dataset):
         """
         self.poses_2d = []
         self.poses_3d = []
+        self.actions = []
 
         for key2d in pose_set_2d.keys():
             subj, act, seqname = key2d
@@ -28,28 +29,38 @@ class Human36M(Dataset):
                 else (subj, act, "{}.h5".format(seqname.split(".")[0]))
             )
 
-            self.poses_2d.append(pose_set_2d[key2d])
-            self.poses_3d.append(pose_set_3d[key3d])
+            poses_2d = pose_set_2d[key2d]  # [n, 16 x 2]
+            poses_3d = pose_set_3d[key3d]  # [n, n_joints x 3]
+            assert len(poses_2d) == len(poses_3d)
+            actions = [act] * len(poses_2d)  # [n,]
 
-        self.poses_2d = np.vstack(self.poses_2d)
-        self.poses_3d = np.vstack(self.poses_3d)
+            self.poses_2d.append(poses_2d)
+            self.poses_3d.append(poses_3d)
+            self.actions.extend(actions)
 
-        assert len(self.poses_2d) == len(self.poses_3d)
+        self.poses_2d = np.vstack(self.poses_2d)  # [N, 16 x 2]
+        self.poses_3d = np.vstack(self.poses_3d)  # [N, n_joints x 3]
+        self.actions = np.array(self.actions)  # [N,]
+
+        assert len(self.poses_2d) == len(self.poses_3d) == len(self.actions)
 
     def __getitem__(self, idx):
-        """Get a pair of 2d and 3d pose.
+        """Get a set of 2d pose, 3d pose, and action.
 
         Args:
             idx (int): Index of the 2d/3d pose pair to get.
 
         Returns:
-            x (torch.Tensor): 2d pose (model input).
-            y (torch.Tensor): 3d pose (model output i.e., label).
+            (dict): a set of 2d pose, 3d pose, and action.
+            pose_2d (torch.Tensor): 2d pose (model input).
+            pose_3d (torch.Tensor): 3d pose (model output i.e., label).
+            action (str): Action to which the pose pair belongs.
         """
-        x = torch.from_numpy(self.poses_2d[idx]).float()
-        y = torch.from_numpy(self.poses_3d[idx]).float()
+        pose_2d = torch.from_numpy(self.poses_2d[idx]).float()
+        pose_3d = torch.from_numpy(self.poses_3d[idx]).float()
+        action = self.actions[idx]
 
-        return x, y
+        return {"pose_2d": pose_2d, "pose_3d": pose_3d, "action": action}
 
     def __len__(self):
         """Return the number of the samples.

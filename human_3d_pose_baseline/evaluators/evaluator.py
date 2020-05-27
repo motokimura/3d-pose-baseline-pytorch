@@ -29,14 +29,17 @@ class Human36M_JointErrorEvaluator:
         """Remove all samples added so far.
         """
         self.joint_distances = []
+        self.actions = []
 
-    def add_samples(self, pred_3d_poses, truth_3d_poses):
+    def add_samples(self, pred_3d_poses, truth_3d_poses, actions):
         """Add pairs of predicted and ground-truth poses to evaluate.
 
         Args:
             pred_3d_poses (numpy.array): Predicted 3d poses (normalized). `[batch_size, n_joints, 3]`.
             truth_3d_poses (numpy.array): Ground-truth 3d poses (normalized). `[batch_size, n_joints, 3]`.
+            actions (list[str]): Actions to which the poses belong.
         """
+        # Compute distances of corresponding joints of pred/truth poses.
         pred = self._preprocess_poses(pred_3d_poses)  # [batch_size, n_joints x 3]
         truth = self._preprocess_poses(truth_3d_poses)  # [batch_size, n_joints x 3]
 
@@ -46,8 +49,10 @@ class Human36M_JointErrorEvaluator:
             )  # [batch_size, n_joints x 3]
 
         d = self._compute_joint_distances(pred, truth)  # [batch_size, n_joints]
-
         self.joint_distances.append(d)
+
+        # Cache action of each frame for per action evaluation.
+        self.actions.extend(actions)
 
     def get_metrics(self):
         """Get evaluation results.
@@ -56,14 +61,31 @@ class Human36M_JointErrorEvaluator:
             (dict): evaluation results.
         """
         joint_distances = np.vstack(self.joint_distances)  # [N, n_joints]
+        actions = np.array(self.actions)  # [N,]
+        assert len(joint_distances) == len(actions)
 
-        mean_per_joint_position_error = np.mean(joint_distances)  # float
-        per_joint_position_error = np.mean(joint_distances, axis=0)  # [n_joints,]
-
+        # Evaluate joint position errors over all actions.
+        mpjpe = np.mean(joint_distances)  # mean per joint position error: float
+        pjpe = np.mean(joint_distances, axis=0)  # per joint position error: [n_joints,]
         metrics = {
-            "mean_per_joint_position_error": mean_per_joint_position_error,
-            "per_joint_position_error": per_joint_position_error,
+            "MPJPE": mpjpe,
+            "PJPE": pjpe,
         }
+
+        # Evaluate joint position error per action.
+        for action in data_utils.H36M_ACTIONS:
+            mask = actions == action
+            if np.sum(mask) == 0:  # In case no sample is found in the action,
+                mpjpe = pjpe = -1  # set errors as -1.
+                print("Warining: no test sample was found in the action: {action}. ")
+            else:
+                joint_distances_masked = joint_distances[mask]
+                mpjpe = np.mean(joint_distances_masked)
+                pjpe = np.mean(joint_distances_masked, axis=0)
+
+            metrics["MPJPE/{}".format(action)] = mpjpe
+            metrics["PJPE/{}".format(action)] = pjpe
+
         return metrics
 
     def _preprocess_poses(self, poses_3d):

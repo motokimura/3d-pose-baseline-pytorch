@@ -175,5 +175,7 @@ pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/macos,python,virtualenv,jupyternotebooks,visualstudiocode
 
-dataset/h36m
-dataset/h36m.zip
+/dataset/h36m
+/dataset/h36m.zip
+
+/results
