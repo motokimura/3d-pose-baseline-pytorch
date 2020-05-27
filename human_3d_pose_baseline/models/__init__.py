@@ -22,6 +22,11 @@ def get_model(config):
         predict_14=config.MODEL.PREDICT_14,
     )
 
+    weight_path = config.MODEL.WEIGHT
+    if weight_path:
+        model.load_state_dict(torch.load(weight_path, map_location=torch.device("cpu")))
+        print(f"Loaded weight from {weight_path}.")
+
     device = get_device(config.USE_CUDA)
     model = model.to(device)
 

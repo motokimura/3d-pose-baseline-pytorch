@@ -3,7 +3,6 @@ import os
 
 import torch
 from tensorboardX import SummaryWriter
-from tqdm import tqdm
 
 from _init_path import init_path
 from human_3d_pose_baseline.configs import load_config

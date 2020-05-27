@@ -25,6 +25,7 @@ _C.MODEL.LINEAR_SIZE = 1024
 _C.MODEL.NUM_STAGES = 2
 _C.MODEL.DROPOUT_PROB = 0.5
 _C.MODEL.PREDICT_14 = False
+_C.MODEL.WEIGHT = ""
 
 # Model optimization settings.
 _C.SOLVER = CN()
