@@ -1,4 +1,4 @@
-# 3d_pose_estimation
+# human_3d_pose_estimation
 h5py
 numpy
 tqdm
